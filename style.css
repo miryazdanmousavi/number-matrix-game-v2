@@ -1,0 +1,76 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Vazir" !important;
+  text-align: center;
+  background-color: #87ebdc;
+}
+
+@font-face {
+  font-family: "Vazir";
+  src: url("./Vazir.eot");
+  src: url("./Vazir.eot?#iefix") format("embedded-opentype"),
+    url("./Vazir.woff2") format("woff2"), url("./Vazir.woff") format("woff"),
+    url("./Vazir.ttf") format("truetype");
+}
+
+.game-info {
+  margin: 20px;
+}
+
+.matrix-table {
+  margin: 0 auto;
+  border-collapse: collapse;
+  background-color: #19bba5;
+  margin-bottom: 30px;
+}
+
+.matrix-cell {
+  width: 70px;
+  height: 70px;
+  text-align: center;
+  border: 1px solid #000;
+  cursor: pointer;
+}
+
+.matrix-cell.selected {
+  background-color: #257ec2;
+  color: white;
+}
+
+.matrix-cell:hover {
+  background-color: skyblue;
+}
+
+
+#status-container {
+  color: #0f172a;
+  font-size: 20px;
+  margin: 30px 0 15px 0;
+}
+
+h2 {
+  color: #020617;
+  font-size: 35px;
+}
+
+footer {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  font-size: 20px;
+  padding: 30px 0;
+  z-index: -1;
+}
+
+@media screen and (max-width: 500px) {
+  .matrix-cell {
+    width: 50px;
+    height: 50px;
+  }
+}
