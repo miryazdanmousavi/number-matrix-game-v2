@@ -7,7 +7,7 @@ let currentLevel = 1;
 let winningCombination = [];
 
 let timer;
-let timeLeft = 30;
+let timeLeft = 45;
 
 const getRandomNumber = () => Math.floor(Math.random() * 100) + 1;
 
@@ -74,7 +74,6 @@ function handleCellClick(row, col) {
   cellElement.classList.add("selected");
 
   if (selectedCells.length === 4) {
-    clearInterval(timer);
     if (isValidSelection()) {
       const result = calculateProduct();
       if (isWinningCombination(result)) {
@@ -94,10 +93,9 @@ function handleCellClick(row, col) {
             )}`
           );
           resetSelection();
-          startTimer();
         } else {
           revealWinningCombination();
-          restartGame();
+          setTimeout(restartGame, 3000);
         }
       }
     } else {
@@ -105,7 +103,6 @@ function handleCellClick(row, col) {
         "خانه های انتخاب شده غیر مجاز هستند! خانه های انتخاب شده باید 4 خانه ی کنار هم، به صورت افقی، عمودی و مورب باشند همچنین انتخاب مربعی به صورت 2*2 غیرمجاز است"
       );
       resetSelection();
-      startTimer();
     }
   }
 }
@@ -214,23 +211,31 @@ function calculateWinningCombination() {
 }
 
 function revealWinningCombination() {
-  const correctCells = winningCombination.cells.map(
-    (cell) => gameMatrix[cell.row][cell.col]
-  );
+  const correctCells = winningCombination.cells;
+
+  correctCells.forEach((cell) => {
+    const cellElement = document.querySelector(
+      `[data-row='${cell.row}'][data-col='${cell.col}']`
+    );
+    if (cellElement) {
+      cellElement.classList.add("correct-answer");
+    }
+  });
 
   alert(
-    `متاسفانه باختید! پاسخ صحیح خانه های: ` +
-      correctCells.map((num) => formatNumberWithCommas(num)).join(", ") +
-      `\nحاصل ضرب: ${formatNumberWithCommas(winningCombination.product)} `
+    `متاسفانه باختید! پاسخ صحیح خانه ها مشخص شده است: ` +
+      `\n حاصل ضرب صحیح: ${formatNumberWithCommas(winningCombination.product)} `
   );
+  clearInterval(timer);
 }
 
 function nextLevel() {
   clearInterval(timer);
   if (matrixSize < maxSize) {
     matrixSize++;
-    currentAttempts = attempts;
     currentLevel++;
+    currentAttempts = attempts;
+    timeLeft = 45;
     createMatrix(matrixSize);
     renderMatrix();
     resetSelection();
@@ -247,6 +252,7 @@ function restartGame() {
   matrixSize = 4;
   currentAttempts = attempts;
   currentLevel = 1;
+  timeLeft = 45;
   createMatrix(matrixSize);
   renderMatrix();
   resetSelection();
@@ -270,7 +276,6 @@ function updateStatusDisplay() {
 
 function startTimer() {
   clearInterval(timer);
-  timeLeft = 30;
   updateTimerDisplay();
 
   timer = setInterval(() => {
@@ -279,21 +284,9 @@ function startTimer() {
 
     if (timeLeft <= 0) {
       clearInterval(timer);
-      currentAttempts--;
-      updateStatusDisplay();
-
-      if (currentAttempts > 0) {
-        alert(
-          `زمان شما تمام شد! شانس های باقی مانده: ${toPersianNumber(
-            currentAttempts
-          )}`
-        );
-        resetSelection();
-        startTimer();
-      } else {
-        revealWinningCombination();
-        restartGame();
-      }
+      alert("زمان شما تمام شد! بازی را از اول شروع کنید.");
+      revealWinningCombination();
+      setTimeout(restartGame, 3000);
     }
   }, 1000);
 }
