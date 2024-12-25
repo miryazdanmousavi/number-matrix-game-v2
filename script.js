@@ -6,6 +6,9 @@ let gameMatrix = [];
 let currentLevel = 1;
 let winningCombination = [];
 
+let timer;
+let timeLeft = 30;
+
 const getRandomNumber = () => Math.floor(Math.random() * 100) + 1;
 
 function formatNumberWithCommas(num) {
@@ -71,6 +74,7 @@ function handleCellClick(row, col) {
   cellElement.classList.add("selected");
 
   if (selectedCells.length === 4) {
+    clearInterval(timer);
     if (isValidSelection()) {
       const result = calculateProduct();
       if (isWinningCombination(result)) {
@@ -90,6 +94,7 @@ function handleCellClick(row, col) {
             )}`
           );
           resetSelection();
+          startTimer();
         } else {
           revealWinningCombination();
           restartGame();
@@ -100,6 +105,7 @@ function handleCellClick(row, col) {
         "خانه های انتخاب شده غیر مجاز هستند! خانه های انتخاب شده باید 4 خانه ی کنار هم، به صورت افقی، عمودی و مورب باشند همچنین انتخاب مربعی به صورت 2*2 غیرمجاز است"
       );
       resetSelection();
+      startTimer();
     }
   }
 }
@@ -215,11 +221,12 @@ function revealWinningCombination() {
   alert(
     `متاسفانه باختید! پاسخ صحیح خانه های: ` +
       correctCells.map((num) => formatNumberWithCommas(num)).join(", ") +
-      `\nحاصل ضرب: ${formatNumberWithCommas(winningCombination.product)}`
+      `\nحاصل ضرب: ${formatNumberWithCommas(winningCombination.product)} `
   );
 }
 
 function nextLevel() {
+  clearInterval(timer);
   if (matrixSize < maxSize) {
     matrixSize++;
     currentAttempts = attempts;
@@ -228,6 +235,7 @@ function nextLevel() {
     renderMatrix();
     resetSelection();
     updateStatusDisplay();
+    startTimer();
   } else {
     alert("تبریک! تمام مراحل بازی رو با موفقیت تموم کردی، حالا از اول شروع کن");
     restartGame();
@@ -235,6 +243,7 @@ function nextLevel() {
 }
 
 function restartGame() {
+  clearInterval(timer);
   matrixSize = 4;
   currentAttempts = attempts;
   currentLevel = 1;
@@ -242,6 +251,7 @@ function restartGame() {
   renderMatrix();
   resetSelection();
   updateStatusDisplay();
+  startTimer();
 }
 
 function resetSelection() {
@@ -256,9 +266,48 @@ function updateStatusDisplay() {
   statusContainer.textContent = `سطح: ${toPersianNumber(
     currentLevel
   )} ‌ شانس باقی مانده: ${toPersianNumber(currentAttempts)}`;
+}
 
-  if (matrixSize === maxSize) {
-    alert("شما به آخرین سطح رسیده‌اید. از اینجا به بعد، سطح جدیدی وجود ندارد.");
+function startTimer() {
+  clearInterval(timer);
+  timeLeft = 30;
+  updateTimerDisplay();
+
+  timer = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      currentAttempts--;
+      updateStatusDisplay();
+
+      if (currentAttempts > 0) {
+        alert(
+          `زمان شما تمام شد! شانس های باقی مانده: ${toPersianNumber(
+            currentAttempts
+          )}`
+        );
+        resetSelection();
+        startTimer();
+      } else {
+        revealWinningCombination();
+        restartGame();
+      }
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const timerContainer = document.getElementById("timer-container");
+  timerContainer.textContent = `زمان باقی‌مانده: ${toPersianNumber(
+    timeLeft
+  )} ثانیه`;
+
+  if (timeLeft <= 5) {
+    timerContainer.style.color = "red";
+  } else {
+    timerContainer.style.color = "black";
   }
 }
 
@@ -270,6 +319,16 @@ window.onload = function () {
     document.getElementById("game-container")
   );
 
+  const timerContainer = document.createElement("div");
+  timerContainer.id = "timer-container";
+  document.body.insertBefore(
+    timerContainer,
+    document.getElementById("game-container")
+  );
+
   createMatrix(matrixSize);
   renderMatrix();
+  resetSelection();
+  updateStatusDisplay();
+  startTimer();
 };
