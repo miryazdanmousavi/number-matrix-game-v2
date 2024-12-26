@@ -77,21 +77,46 @@ function handleCellClick(row, col) {
     if (isValidSelection()) {
       const result = calculateProduct();
       if (isWinningCombination(result)) {
-        alert(
-          `تبریک! شما برنده شدید، حاصل ضرب پاسخ صحیح شما : ${formatNumberWithCommas(
+        const Toast = Swal.mixin({
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+          },
+        });
+        Toast.fire({
+          icon: "success",
+          title: `تبریک! شما برنده شدید، حاصل ضرب پاسخ صحیح شما : ${formatNumberWithCommas(
             result
-          )}`
-        );
+          )}`,
+        });
+
         nextLevel();
       } else {
         currentAttempts--;
         updateStatusDisplay();
         if (currentAttempts > 0) {
-          alert(
-            `اشتباه حدس زدی! شانس های باقی مانده: ${toPersianNumber(
+          const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.onmouseenter = Swal.stopTimer;
+              toast.onmouseleave = Swal.resumeTimer;
+            },
+          });
+          Toast.fire({
+            icon: "error",
+            title: `اشتباه حدس زدی شانس های باقی مانده : ${toPersianNumber(
               currentAttempts
-            )}`
-          );
+            )}`,
+          });
           resetSelection();
         } else {
           revealWinningCombination();
@@ -99,9 +124,23 @@ function handleCellClick(row, col) {
         }
       }
     } else {
-      alert(
-        "خانه های انتخاب شده غیر مجاز هستند! خانه های انتخاب شده باید 4 خانه ی کنار هم، به صورت افقی، عمودی و مورب باشند همچنین انتخاب مربعی به صورت 2*2 غیرمجاز است"
-      );
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.onmouseenter = Swal.stopTimer;
+          toast.onmouseleave = Swal.resumeTimer;
+        },
+      });
+      Toast.fire({
+        icon: "warning",
+        title:
+          "خانه های انتخاب شده غیر مجاز هستند! خانه های انتخاب شده باید 4 خانه ی کنار هم، به صورت افقی، عمودی و مورب باشند همچنین انتخاب مربعی به صورت 2*2 غیرمجاز است",
+      });
+
       resetSelection();
     }
   }
@@ -222,6 +261,11 @@ function revealWinningCombination() {
     }
   });
 
+  // غیر فعال کردن کلیک بر روی سلول‌ها
+  document.querySelectorAll(".matrix-cell").forEach((cell) => {
+    cell.classList.add("disabled");
+  });
+
   alert(
     `متاسفانه باختید! پاسخ صحیح خانه ها مشخص شده است: ` +
       `\n حاصل ضرب صحیح: ${formatNumberWithCommas(winningCombination.product)} `
@@ -242,7 +286,12 @@ function nextLevel() {
     updateStatusDisplay();
     startTimer();
   } else {
-    alert("تبریک! تمام مراحل بازی رو با موفقیت تموم کردی، حالا از اول شروع کن");
+    Swal.fire({
+      title:
+        "تبریک! تمام مراحل بازی رو با موفقیت تموم کردی، حالا از اول شروع کن",
+      icon: "success",
+      draggable: true,
+    });
     restartGame();
   }
 }
@@ -258,6 +307,11 @@ function restartGame() {
   resetSelection();
   updateStatusDisplay();
   startTimer();
+
+  // فعال کردن دوباره کلیک روی سلول‌ها
+  document.querySelectorAll(".matrix-cell").forEach((cell) => {
+    cell.classList.remove("disabled");
+  });
 }
 
 function resetSelection() {
