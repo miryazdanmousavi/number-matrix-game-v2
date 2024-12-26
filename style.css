@@ -76,6 +76,12 @@ footer {
   background-color: yellow !important;
   color: black !important;
   border: 2px solid red !important;
+  opacity: 1 !important;
+}
+
+.matrix-cell.disabled {
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 @media screen and (max-width: 500px) {
